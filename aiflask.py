@@ -2,6 +2,9 @@ from flask import Flask, request, redirect, url_for, flash, session, jsonify,ren
 from google import genai
 import speech_recognition as sr
 
+from gtts import gTTS
+import pygame
+
 
 app = Flask(__name__)
 
@@ -46,6 +49,15 @@ def voice():
                 model="gemini-2.0-flash",
                 contents=text,
             )
+            #voice
+            pygame.mixer.init()
+            sound_file = "sound_file.mp3"
+            text_to_speech = gTTS(text=response.text, lang='my')
+            text_to_speech.save(sound_file)
+            sound = pygame.mixer.Sound(sound_file)
+            sound.play()
+            while pygame.mixer.get_busy(): 
+                pygame.time.delay(100)
             return jsonify({'status': 'success', 'message': response.text})
         except sr.UnknownValueError:
             print("Google Speech Recognition could not understand audio")
