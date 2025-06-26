@@ -24,8 +24,20 @@ def generate():
     model="gemini-2.0-flash",
     contents=user_input,
     )
+    for part in response.candidates[0].content.parts:
+        if part.text is not None:
+            print(part.text)
+            return jsonify({'status': 'success', 'message': part.text})
+        if part.executable_code is not None:
+            print(part.executable_code.code)
+            return jsonify({'status': 'success', 'message': part.executable_code.code})
+            
+        if part.code_execution_result is not None:
+            print(part.code_execution_result.output)
+            return jsonify({'status': 'success', 'message': part.code_execution_result.output})
+            
     
-    return jsonify({'status': 'success', 'message': response.text})
+    # return jsonify({'status': 'success', 'message': response.text})
 
 
 @app.route('/voice', methods=['GET'])
